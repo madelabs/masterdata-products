@@ -98,7 +98,45 @@ module.exports.list = async (event, context) => {
 };
 
 module.exports.replace = async (event, context) => {
-  // todo
+  const data = JSON.parse(event.body);
+  const product = new Product(
+      data.id,
+      event.requestContext.authorizer.claims["custom:tenant_id"], 
+      data.code, 
+      data.description,
+      data.height,
+      data.length,
+      data.name,
+      data.revision,
+      data.status,
+      data.unitOfMeasure,
+      data.weight,
+      data.width,
+      data.created,
+      new Date()
+  );
+  
+  const params = {
+    TableName: process.env.DYNAMODB_TABLE,
+    Item: product
+  };
+  
+  try {
+    const result = await dynamodb.put(params).promise();
+    return {
+      statusCode: 200,
+      headers: headers,
+      body: JSON.stringify(params.Item)
+    };
+  }
+  catch (error) {
+    console.error('error', error);
+    return {
+      statusCode: error.statusCode || 501,
+      headers: headers,
+      error: 'Could not update product'
+    };
+  }
 };
 
 module.exports.single = async (event, context) => {
@@ -117,7 +155,7 @@ module.exports.single = async (event, context) => {
       return {
         statusCode: 404,
         headers: headers,
-        body: { message: 'Couldn\'t find product.' }
+        body: { message: 'Couldn\'t find product' }
       };
     }
     
@@ -138,9 +176,59 @@ module.exports.single = async (event, context) => {
 };
 
 module.exports.update = async (event, context) => {
-  return {
-    statusCode: 404,
-    headers: headers,
-    error: 'Not implemented'
+  const data = JSON.parse(event.body);
+
+  var expression = `SET description = :description, height = :height, 
+    length = :length, name = :name, revision = :revision, 
+    unitOfMeasure = :unitOfMeasure, weight = :weight, width = :width, 
+    lastUpdated = :lastUpdated`;
+
+  var expressionValues = {
+    ':description': data.description,
+    ':height': data.height,
+    ':length': data.length,
+    ':name': data.name,
+    ':revision': data.revision,
+    ':unitOfMeasure': data.unitOfMeasure,
+    ':weight': data.weight,
+    ':width': data.width,
+    ':lastUpdated': data.lastUpdated
   };
+
+  const params = {
+    TableName: process.env.DYNAMODB_TABLE,
+    Key: {
+      id: event.pathParameters.id
+    },
+    UpdateExpression: expression,
+    ExpressionAttributeValues: expressionValues,
+    ReturnValues: 'ALL_NEW'
+  };
+  
+  try {
+    const result = await dynamodb.update(params).promise();
+    
+    // if no items were found
+    if (!result || typeof result === 'undefined' || !result.Item) {
+      return {
+        statusCode: 404,
+        headers: headers,
+        body: { message: 'Couldn\'t find product' }
+      };
+    }
+    
+    return {
+      statusCode: 200,
+      headers: headers,
+      body: JSON.stringify(result.Item),
+    };
+  }
+  catch (error) {
+    console.error('error', error);
+    return {
+      statusCode: error.statusCode || 501,
+      headers: headers,
+      error: 'Could not update product'
+    };
+  }
 };

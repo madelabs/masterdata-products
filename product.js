@@ -13,11 +13,17 @@ class Product {
         status,
         unitOfMeasure,
         weight,
-        width
+        width,
+        created,
+        lastUpdated
         ) {
         
         if (!id) {
             id = uuid.v1();
+        }
+
+        if (!created) {
+            created = new Date()
         }
         
         this.id = id;
@@ -32,6 +38,8 @@ class Product {
         this.unitOfMeasure = unitOfMeasure;
         this.weight = weight;
         this.width = width;
+        this.created = created;
+        this.lastUpdated = lastUpdated;
     }
 }
 
