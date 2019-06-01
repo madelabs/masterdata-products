@@ -3,7 +3,7 @@ const uuid = require('uuid');
 class Product {
     constructor(
         id,
-        tenant_id,
+        tenantId,
         code,
         description,
         height,
@@ -14,6 +14,9 @@ class Product {
         unitOfMeasure,
         weight,
         width,
+        isForSale,
+        isManufacturable,
+        allowBackorders,
         created,
         lastUpdated
         ) {
@@ -25,9 +28,21 @@ class Product {
         if (!created) {
             created = new Date()
         }
+
+        if (!isForSale) {
+            isForSale = false;
+        }
+
+        if (!isManufacturable) {
+            isManufacturable = false;
+        }
+
+        if (!allowBackorders) {
+            allowBackorders = false;
+        }
         
         this.id = id;
-        this.tenant_id = tenant_id;
+        this.tenantId = tenantId;
         this.code = code;
         this.description = description;
         this.height = height;
@@ -38,6 +53,9 @@ class Product {
         this.unitOfMeasure = unitOfMeasure;
         this.weight = weight;
         this.width = width;
+        this.isForSale = isForSale;
+        this.isManufacturable = isManufacturable;
+        this.allowBackorders = allowBackorders;
         this.created = created;
         this.lastUpdated = lastUpdated;
     }

@@ -22,7 +22,10 @@ module.exports.create = async (event, context) => {
       data.status,
       data.unitOfMeasure,
       data.weight,
-      data.width
+      data.width,
+      data.isForSale,
+      data.isManufacturable,
+      data.allowBackorders
   );
   
   const params = {
@@ -112,6 +115,9 @@ module.exports.replace = async (event, context) => {
       data.unitOfMeasure,
       data.weight,
       data.width,
+      data.isForSale,
+      data.isManufacturable,
+      data.allowBackorders,
       data.created,
       new Date()
   );
@@ -181,6 +187,8 @@ module.exports.update = async (event, context) => {
   var expression = `SET description = :description, height = :height, 
     length = :length, name = :name, revision = :revision, 
     unitOfMeasure = :unitOfMeasure, weight = :weight, width = :width, 
+    isForSale = :isForSale, isManufacturable = :isManufacturable,
+    allowBackorders = :allowBackorders,
     lastUpdated = :lastUpdated`;
 
   var expressionValues = {
@@ -192,6 +200,9 @@ module.exports.update = async (event, context) => {
     ':unitOfMeasure': data.unitOfMeasure,
     ':weight': data.weight,
     ':width': data.width,
+    ':isForSale': data.isForSale,
+    ':isManufacturable': data.isManufacturable,
+    ':allowBackorders': data.allowBackorders,
     ':lastUpdated': data.lastUpdated
   };
 
